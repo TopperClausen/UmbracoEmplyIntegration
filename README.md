@@ -5,10 +5,10 @@ Add the following object to the root of the appsettings.json file
 ```json
 "Limbo": {
     "Emply": {
-        "apiKey": "efe48574-7b2a-4a84-8557-adb89140acc6",
-        "customerName": "toender",
-        "mediaId": "30b0425b-09fe-4b34-8ba5-0d159b1b1cff",
-        "category": "2da25e47-6839-439c-97a4-be2c65277fe3",
+        "apiKey": "string",
+        "customerName": "string",
+        "mediaId": "string",
+        "category": "string",
         "templateAlias": "job"
     }
 }

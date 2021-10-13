@@ -29,11 +29,11 @@ namespace umbraco_emply.Integrations.Emply
         {
             if (contentService == null) throw new ArgumentException(nameof(contentService));
 
-            this._contentService = contentService;
+            _contentService = contentService;
 
-            this._emplyService = EmplyHttpService.CreateFromApiKey(options.Value.Emply.CustomerName, options.Value.Emply.ApiKey);
+            _emplyService = EmplyHttpService.CreateFromApiKey(options.Value.Emply.CustomerName, options.Value.Emply.ApiKey);
 
-            this._options = options.Value;
+            _options = options.Value;
         }
 
         public void Import() {
@@ -44,7 +44,7 @@ namespace umbraco_emply.Integrations.Emply
 
             EmplyPostingListResponse response = _emplyService.GetPostings(new EmplyGetPostingsOptions
             {
-                MediaId = this._options.Emply.MediaId,
+                MediaId = _options.Emply.MediaId,
                 Take = 500
             });
 
@@ -53,7 +53,7 @@ namespace umbraco_emply.Integrations.Emply
             foreach(EmplyPosting posting in response.Body)
             {
                 if (!existingJobs.TryGetValue(posting.VacancyId.ToString(), out IContent content)) AddNewJob(posting);
-                else if (this.isChanged(posting, content)) ModifyJob(content, posting);
+                else if (isChanged(posting, content)) ModifyJob(content, posting);
             }
             SaveAndPublishChanges();
         }
@@ -62,7 +62,7 @@ namespace umbraco_emply.Integrations.Emply
             
             // Obtaining variables for comparison
             string newGridJson = GetGridContent(newNode)?.ToString();
-            newNode.Data.TryGet(this._options.Emply.Category, out EmplyJobDataType1 categoryField);
+            newNode.Data.TryGet(_options.Emply.Category, out EmplyJobDataType1 categoryField);
             string title = newNode.Advertisements.FirstOrDefault(x => x.IsDefault)?.Title.ToString() ?? newNode.Title.ToString();
             string categoryName = categoryField?.Value[0].Title.ToString();
             string categoryId = categoryField?.Value[0].ToString();
@@ -98,25 +98,24 @@ namespace umbraco_emply.Integrations.Emply
 
         private void AddNewJob(EmplyPosting content) {
             string title = content.Advertisements.FirstOrDefault(x => x.IsDefault)?.Title.ToString() ?? content.Title.ToString();
-            var node = this._contentService.Create(title, Constants.JobPageKey, this._options.Emply.TemplateAlias);
+            var node = _contentService.Create(title, Constants.JobPageKey, _options.Emply.TemplateAlias);
 
             ModifyJob(node, content);
         }
 
         private void SaveAndPublishChanges() {
-            foreach (IContent content in this._modifyedData)
+            foreach (IContent content in _modifyedData)
             {
-                this._contentService.SaveAndPublish(content);
-                this._contentService.Delete(content);
+                _contentService.SaveAndPublish(content);
+                content.Name = content.Name.Replace("(1)", "").Trim();
+                _contentService.SaveAndPublish(content);
+                
             }
+            _modifyedData.RemoveRange(0, _modifyedData.Count());
         }
 
         private void ModifyJob(IContent job, EmplyPosting newData) {
-            if(this._options is null) throw new Exception("A");
-            if(this._options.Emply is null) throw new Exception("B");
-            if(this._options.Emply.Category is null) throw new Exception("C");
-
-            newData.Data.TryGet(this._options.Emply.Category, out EmplyJobDataType1 categoryField);
+            newData.Data.TryGet(_options.Emply.Category, out EmplyJobDataType1 categoryField);
 
             string title = newData.Advertisements.FirstOrDefault(x => x.IsDefault)?.Title.ToString() ?? newData.Title.ToString();
             string categoryName = categoryField?.Value[0].Title.ToString();
@@ -145,7 +144,7 @@ namespace umbraco_emply.Integrations.Emply
 
             job.SetValue("grid", newGridJson);
 
-            this._modifyedData.Add(job);
+            _modifyedData.Add(job);
         }
     
         private JObject GetGridContent(EmplyPosting posting){

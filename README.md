@@ -1,6 +1,6 @@
 ﻿## Deployments into umbraco
 
-NOTE: This module requires [Limbo.Integrations.Emply](https://www.nuget.org/packages/Limbo.Integrations.Emply/1.0.0-beta002 "Bjerners package")
+NOTE: This module requires [Limbo.Integrations.Emply](https://www.nuget.org/packages/Limbo.Integrations.Emply/1.0.0-beta002 "Bacon til Bjerner")
 
 ### Config
 
@@ -39,7 +39,7 @@ The EmplyOptions class is found in this code just add the namespace to the Limbo
 
 ### Inside umbraco
 
-Create template with the same alias as in the constants. Document type must have givent data ("job" is default)
+Create template with the same alias as in the constants. Document type must have given data
 * emplyId
 * category
 * categoryId

@@ -1,6 +1,9 @@
 ﻿## Deployments into umbraco
 
+NOTE: This module requires [Limbo.Integrations.Emply](https://www.nuget.org/packages/Limbo.Integrations.Emply/1.0.0-beta002 "Bjerners package")
+
 ### Config
+
 Add the following object to the root of the appsettings.json file
 ```json
 "Limbo": {
@@ -15,6 +18,7 @@ Add the following object to the root of the appsettings.json file
 ```
 
 ### Adding configuration to the pool
+
 Find your LimboOptions class if not existing create it with this code
 ```CSharp
 public class LimboOptions
@@ -34,6 +38,7 @@ IOptions<LimboOptions>
 The EmplyOptions class is found in this code just add the namespace to the LimboOptions.cs file
 
 ### Inside umbraco
+
 Create template with the same alias as in the constants. Document type must have givent data ("job" is default)
 * emplyId
 * category

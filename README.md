@@ -1,6 +1,7 @@
 ﻿## Deployments into umbraco
 
 NOTE: This module requires [Limbo.Integrations.Emply](https://www.nuget.org/packages/Limbo.Integrations.Emply/1.0.0-beta002 "Bacon til Bjerner")
+And [Skybrud.Essentials@latest](https://www.nuget.org/packages/Skybrud.Essentials, "Mere bacon til Bjerner")
 
 ### Config
 

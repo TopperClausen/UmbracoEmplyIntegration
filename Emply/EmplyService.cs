@@ -55,11 +55,12 @@ namespace umbraco_emply.Integrations.Emply
                 if (!existingJobs.TryGetValue(posting.VacancyId.ToString(), out IContent content)) AddNewJob(posting);
                 else if (isChanged(posting, content)) ModifyJob(content, posting);
             }
+
             SaveAndPublishChanges();
+            DeleteRemovedJobs(existingJobs, response.Body);
         }
 
         private Boolean isChanged(EmplyPosting newNode, IContent oldNode) {
-            
             // Obtaining variables for comparison
             string newGridJson = GetGridContent(newNode)?.ToString();
             newNode.Data.TryGet(_options.Emply.Category, out EmplyJobDataType1 categoryField);
@@ -87,13 +88,20 @@ namespace umbraco_emply.Integrations.Emply
             if (applicationLink != oldNode.GetValue<string>("applicationLink")) hasChanges = true;
             if (newGridJson != oldNode.GetValue<string>("grid")) hasChanges = true;
 
-            if (oldNode.Name != umbracoName)
+            if (oldNode.Name.Replace("(1)", "").Trim() != umbracoName)
             {
                 oldNode.Name = umbracoName;
                 hasChanges = true;
             }
 
             return hasChanges;
+        }
+
+        private void DeleteRemovedJobs(Dictionary<string, IContent> existingJobs, EmplyPosting[] jobs) {
+            foreach(var item in existingJobs) {
+                var job = jobs.Where(x =>x.VacancyId.ToString() == item.Value.GetValue<string>("emplyId")).FirstOrDefault();
+                if(job is null) _contentService.Delete(item.Value);
+            }
         }
 
         private void AddNewJob(EmplyPosting content) {
@@ -104,13 +112,8 @@ namespace umbraco_emply.Integrations.Emply
         }
 
         private void SaveAndPublishChanges() {
-            foreach (IContent content in _modifyedData)
-            {
-                _contentService.SaveAndPublish(content);
-                content.Name = content.Name.Replace("(1)", "").Trim();
-                _contentService.SaveAndPublish(content);
-                
-            }
+            foreach (IContent content in _modifyedData) _contentService.SaveAndPublish(content);
+
             _modifyedData.RemoveRange(0, _modifyedData.Count());
         }
 
@@ -221,6 +224,5 @@ namespace umbraco_emply.Integrations.Emply
             return grid;
 
         }
-    
     }
 }
